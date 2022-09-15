@@ -8,6 +8,7 @@ import dateutil.parser as parser
 # from dotenv import load_dotenv
 # load_dotenv()
 from kafka import KafkaProducer
+from time import sleep
 
 bearer_token = 'AAAAAAAAAAAAAAAAAAAAADNVhAEAAAAAfgohmt4oXJK3eN5WFjzxMpDIUKY%3DGVdP4Fd6Zgvpxz5IvMmnjasTP7cSDz3VsswUBUTjXtUmZHwM3J'
 
@@ -17,7 +18,7 @@ search_url = "https://api.twitter.com/2/tweets/search/recent"
 # expansions,tweet.fields,media.fields,poll.fields,place.fields,user.fields
 
 
-
+sleep(30)
 
 def bearer_oauth(r):
     """
@@ -39,7 +40,7 @@ def parser_time(time):
 
 def get_tweets(number=1000):
     my_producer = KafkaProducer(  
-    bootstrap_servers = ['localhost:9092'],  
+    bootstrap_servers = ['kafka:9092'],  
     value_serializer = lambda x:json.dumps(x).encode('utf-8')  
     )  
     tod = datetime.datetime.now()
