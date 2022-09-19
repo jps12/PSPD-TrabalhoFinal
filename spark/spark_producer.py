@@ -6,15 +6,19 @@ import pandas as pd
 import pyspark.pandas as ps
 from unidecode import unidecode
 import datetime
+import time
 from kafka import KafkaProducer
 
+KAFKA_HOST='kafka:9092'
+
+time.sleep(60)
 
 class TwitterProducer:
     def __init__(self):
         self.token = 'AAAAAAAAAAAAAAAAAAAAADNVhAEAAAAAfgohmt4oXJK3eN5WFjzxMpDIUKY%3DGVdP4Fd6Zgvpxz5IvMmnjasTP7cSDz3VsswUBUTjXtUmZHwM3J'
         self.time()
         self.query_params = {'query': 'Lula OR Bolsonaro lang:pt ','max_results': '10','tweet.fields': 'created_at','start_time': self.start_time_str,'end_time': self.end_time_str}
-        self.my_producer = KafkaProducer(bootstrap_servers = ['localhost:9092'],value_serializer = lambda x:json.dumps(x).encode('utf-8'))
+        self.my_producer = KafkaProducer(bootstrap_servers = [KAFKA_HOST],value_serializer = lambda x:json.dumps(x).encode('utf-8'))
         self.search_url = "https://api.twitter.com/2/tweets/search/recent"
         
         self.main()
@@ -67,12 +71,13 @@ class TwitterProducer:
             self.get_data()
             self.handle_data()
 
-            self.my_producer.send(value = self.spark_df['text'].to_json(),topic = 'test')
-            
-            #Descomente estas linhas para enviar um topico pra cada candidato
-#             self.my_producer.send(value = self.spark_df['bolsonaro'].to_json(),topic = 'bolsonaro')
-#             self.my_producer.send(value = self.spark_df['lula'].to_json(),topic = 'lula')
-#             self.my_producer.send(value = self.spark_df['lula_bolsonaro'].to_json(),topic = 'lula_bolsonaro')
+            for i in range(len(self.spark_df)):
+
+                self.my_producer.send(value = self.spark_df['bolsonaro'][i],topic = 'bolsonaro')
+
+                self.my_producer.send(value = self.spark_df['lula'][i],topic = 'lula')
+
+                self.my_producer.send(value = self.spark_df['lula_bolsonaro'][i],topic = 'lula_bolsonaro')
             
             
             self.time(booleana = False)
