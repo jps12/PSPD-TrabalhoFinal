@@ -2,7 +2,7 @@
 
 ## Como rodar:
 
-### Prerequisitos:
+### Pré-requisitos:
 
 No arquivo de docker-compose.yml, nos seguintes campos:
 ```
